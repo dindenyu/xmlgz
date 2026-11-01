@@ -1,0 +1,37 @@
+name: Unzip EPG XML
+
+on:
+  # 定时触发：每天 UTC 时间 1点（你可以根据需要修改 Cron 表达式）
+  schedule:
+    - cron: '50 0,10 * * *'
+  # 允许手动触发
+  workflow_dispatch:
+
+jobs:
+  unzip-file:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # 赋予提交代码的权限
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download and Unzip all.xml.gz
+        run: |
+          # 如果你的仓库里 all.xml.gz 也是通过同步源仓库自动更新的，
+          # 你可以直接用 wget/curl 下载最新的压缩包，或者直接用下面从源仓库获取的命令：
+          curl -L https://raw.githubusercontent.com/kuke31/xmlgz/main/all.xml.gz -o all.xml.gz
+          
+          # 解压文件
+          gzip -d all.xml.gz
+
+      - name: Commit and Push unzipped xml
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          
+          # 添加修改后的文件
+          git add all.xml
+          
+          # 如果有改动才提交
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-unzip all.xml at $(date '+%Y-%m-%d %H:%M:%S')" && git push)
