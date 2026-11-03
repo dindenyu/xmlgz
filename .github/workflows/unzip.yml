@@ -21,7 +21,9 @@ jobs:
           # 如果你的仓库里 all.xml.gz 也是通过同步源仓库自动更新的，
           # 你可以直接用 wget/curl 下载最新的压缩包，或者直接用下面从源仓库获取的命令：
           curl -L https://raw.githubusercontent.com/kuke31/xmlgz/main/all.xml.gz -o all.xml.gz
-          
+
+          # 删除原有文件
+          rm -f all.xml
           # 解压文件
           gzip -d all.xml.gz
 
